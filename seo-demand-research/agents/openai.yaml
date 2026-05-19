@@ -1,0 +1,4 @@
+interface:
+  display_name: "SEO Demand Research"
+  short_description: "Find SEO demand and keyword wedges"
+  default_prompt: "Use this skill to research overseas SEO demand, find low-competition keyword opportunities, inspect SERPs and competitors, and produce a ranked keyword report plus executable SOP."
