@@ -1,0 +1,6 @@
+interface:
+  display_name: "拼多多月度盈亏计算"
+  short_description: "自动核算拼多多月度订单成本、推广费用、最终盈亏并生成客户汇报表"
+  default_prompt: "请使用 $pdd-monthly-profit 根据投流截图、成本表和订单表核算月度盈亏，并生成中文客户版Excel。"
+policy:
+  allow_implicit_invocation: true

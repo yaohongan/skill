@@ -3,7 +3,7 @@
 这个仓库用于保存可复用的 Codex skills。当前包含两个技能：
 
 - [`seo-demand-research`](./seo-demand-research)：海外 SEO 需求调研、关键词找词、SERP 竞争判断、竞品分析和建站前 SOP。
-- [`pdd-monthly-profit-calculator`](./pdd-monthly-profit-calculator)：根据拼多多投流截图、成本表和订单文件核算月度利润，并生成客户核对版 Excel。
+- [`pdd-monthly-profit`](./pdd-monthly-profit)：根据拼多多投流截图、成本表和订单文件核算月度盈亏，并生成中文客户版 Excel。
 
 ## 什么是 Skill
 
@@ -26,20 +26,33 @@ skill-name/
 - `agents/openai.yaml`：Codex UI 里的显示名称、短描述和默认提示词。
 - `references/`：按需加载的详细 SOP、评分表、案例库和输出模板。
 
-## Skill：pdd-monthly-profit-calculator
+## Skill：pdd-monthly-profit
 
-`pdd-monthly-profit-calculator` 用于核算拼多多店铺月度盈利或亏损。
+`pdd-monthly-profit` 用于核算拼多多店铺月度盈利或亏损，适合电商运营、财务复盘和客户月报场景。
 
 适用场景：
 
-- 根据商品 ID 匹配订单和单件成本
-- 排除退款、退货、取消和售后处理中订单
-- 按商品数量计算订单总成本
-- 用商品毛利扣除投流总花费
-- 缺少成本时输出明确标记的暂算结果
-- 生成包含逐单明细和公式的客户核对版 Excel
+- 读取投流截图中的核算日期和“总花费（元）”
+- 使用订单商品规格匹配成本表全部工作表中的 SKU 名称
+- 排除退款、取消、交易关闭和售后处理中订单
+- 按“单件总成本 × 商品数量”计算商品总成本
+- 按“商家实收 - 商品总成本 - 推广总花费”计算最终盈亏
+- 成本缺失时暂停正式核算，并输出去重后的未匹配 SKU 清单
+- 生成包含八个中文工作表的客户版 Excel
 
-详细说明、字段要求和安装示例见 [`pdd-monthly-profit-calculator/README.md`](./pdd-monthly-profit-calculator/README.md)。
+### 必要输入
+
+1. 拼多多投流数据截图。
+2. 商品成本 Excel，支持多工作表。
+3. 月度订单 CSV、XLS 或 XLSX 文件。
+
+### 默认输出
+
+1. 盈利或亏损结论及计算拆解。
+2. 去重后的未匹配 SKU 清单；全部匹配时显示“无”。
+3. 中文客户版 Excel，包含客户汇报、SKU 汇总、订单明细、成本标准、剔除订单、未匹配 SKU、参数与来源、核对检查。
+
+详细核算流程见 [`pdd-monthly-profit/SKILL.md`](./pdd-monthly-profit/SKILL.md)，字段别名和匹配规则见 [`pdd-monthly-profit/references/field-mapping.md`](./pdd-monthly-profit/references/field-mapping.md)。
 
 ## Skill：seo-demand-research
 
@@ -65,7 +78,7 @@ skill-name/
 ```bash
 mkdir -p ~/.codex/skills
 cp -R seo-demand-research ~/.codex/skills/
-cp -R pdd-monthly-profit-calculator ~/.codex/skills/
+cp -R pdd-monthly-profit ~/.codex/skills/
 ```
 
 安装后路径应类似：
@@ -80,8 +93,8 @@ cp -R pdd-monthly-profit-calculator ~/.codex/skills/
 rm -rf ~/.codex/skills/seo-demand-research
 cp -R seo-demand-research ~/.codex/skills/
 
-rm -rf ~/.codex/skills/pdd-monthly-profit-calculator
-cp -R pdd-monthly-profit-calculator ~/.codex/skills/
+rm -rf ~/.codex/skills/pdd-monthly-profit
+cp -R pdd-monthly-profit ~/.codex/skills/
 ```
 
 ## 如何调用
@@ -89,7 +102,7 @@ cp -R pdd-monthly-profit-calculator ~/.codex/skills/
 在 Codex 新对话里可以直接说：
 
 ```text
-使用 pdd-monthly-profit-calculator，帮我根据投流截图、成本表和订单文件核算7月份利润，并生成客户核对版 Excel。
+使用 pdd-monthly-profit，帮我根据投流截图、成本表和订单文件核算7月份利润，并生成客户核对版 Excel。
 ```
 
 或者：
@@ -204,11 +217,11 @@ cp -R pdd-monthly-profit-calculator ~/.codex/skills/
 
 ### 拼多多月度利润核算
 
-- [`README.md`](./pdd-monthly-profit-calculator/README.md)：功能、安装、调用和输出说明。
-- [`SKILL.md`](./pdd-monthly-profit-calculator/SKILL.md)：技能触发条件与核算流程。
-- [`字段与口径.md`](./pdd-monthly-profit-calculator/references/字段与口径.md)：成本表、订单表和状态排除规则。
-- [`analyze_profit.py`](./pdd-monthly-profit-calculator/scripts/analyze_profit.py)：订单与成本匹配、利润核算。
-- [`build_report.mjs`](./pdd-monthly-profit-calculator/scripts/build_report.mjs)：客户核对版 Excel 生成。
+- [`SKILL.md`](./pdd-monthly-profit/SKILL.md)：技能触发条件与完整核算流程。
+- [`field-mapping.md`](./pdd-monthly-profit/references/field-mapping.md)：订单、成本、状态字段别名与 SKU 匹配边界。
+- [`prepare_profit_data.py`](./pdd-monthly-profit/scripts/prepare_profit_data.py)：命令行入口，读取订单和成本表并输出核算数据。
+- [`profit_core.py`](./pdd-monthly-profit/scripts/profit_core.py)：订单筛选、SKU 匹配和利润核算核心逻辑。
+- [`build_profit_report.mjs`](./pdd-monthly-profit/scripts/build_profit_report.mjs)：生成中文客户版 Excel 和预览图。
 
 ### SEO 需求调研
 
