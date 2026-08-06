@@ -1,8 +1,9 @@
 # Codex Skills
 
-这个仓库用于保存可复用的 Codex skills。当前包含一个技能：
+这个仓库用于保存可复用的 Codex skills。当前包含两个技能：
 
 - [`seo-demand-research`](./seo-demand-research)：海外 SEO 需求调研、关键词找词、SERP 竞争判断、竞品分析和建站前 SOP。
+- [`pdd-monthly-profit-calculator`](./pdd-monthly-profit-calculator)：根据拼多多投流截图、成本表和订单文件核算月度利润，并生成客户核对版 Excel。
 
 ## 什么是 Skill
 
@@ -25,7 +26,22 @@ skill-name/
 - `agents/openai.yaml`：Codex UI 里的显示名称、短描述和默认提示词。
 - `references/`：按需加载的详细 SOP、评分表、案例库和输出模板。
 
-## 当前 Skill：seo-demand-research
+## Skill：pdd-monthly-profit-calculator
+
+`pdd-monthly-profit-calculator` 用于核算拼多多店铺月度盈利或亏损。
+
+适用场景：
+
+- 根据商品 ID 匹配订单和单件成本
+- 排除退款、退货、取消和售后处理中订单
+- 按商品数量计算订单总成本
+- 用商品毛利扣除投流总花费
+- 缺少成本时输出明确标记的暂算结果
+- 生成包含逐单明细和公式的客户核对版 Excel
+
+详细说明、字段要求和安装示例见 [`pdd-monthly-profit-calculator/README.md`](./pdd-monthly-profit-calculator/README.md)。
+
+## Skill：seo-demand-research
 
 `seo-demand-research` 用于把一个粗糙方向变成可执行的 SEO 产品机会。
 
@@ -49,6 +65,7 @@ skill-name/
 ```bash
 mkdir -p ~/.codex/skills
 cp -R seo-demand-research ~/.codex/skills/
+cp -R pdd-monthly-profit-calculator ~/.codex/skills/
 ```
 
 安装后路径应类似：
@@ -62,11 +79,20 @@ cp -R seo-demand-research ~/.codex/skills/
 ```bash
 rm -rf ~/.codex/skills/seo-demand-research
 cp -R seo-demand-research ~/.codex/skills/
+
+rm -rf ~/.codex/skills/pdd-monthly-profit-calculator
+cp -R pdd-monthly-profit-calculator ~/.codex/skills/
 ```
 
 ## 如何调用
 
 在 Codex 新对话里可以直接说：
+
+```text
+使用 pdd-monthly-profit-calculator，帮我根据投流截图、成本表和订单文件核算7月份利润，并生成客户核对版 Excel。
+```
+
+或者：
 
 ```text
 使用 seo-demand-research 技能，帮我找一个海外 AI 工具站方向，要求有搜索量、竞争低、能订阅变现。
@@ -175,6 +201,16 @@ cp -R seo-demand-research ~/.codex/skills/
 例如之前调研 `AI Flashcard Generator` 时，表面上它是一个商业相关词，但真实 SERP 里有 Revisely、StudyFetch、NoteGPT 等强竞品，且 Ahrefs 显示竞争并不轻。因此最终没有把它作为第一冷启动切口，而是转向更具体的 `pdf to flashcards`、`pdf to anki cards`、`pdf to quizlet` 等长尾方向。
 
 ## 文件说明
+
+### 拼多多月度利润核算
+
+- [`README.md`](./pdd-monthly-profit-calculator/README.md)：功能、安装、调用和输出说明。
+- [`SKILL.md`](./pdd-monthly-profit-calculator/SKILL.md)：技能触发条件与核算流程。
+- [`字段与口径.md`](./pdd-monthly-profit-calculator/references/字段与口径.md)：成本表、订单表和状态排除规则。
+- [`analyze_profit.py`](./pdd-monthly-profit-calculator/scripts/analyze_profit.py)：订单与成本匹配、利润核算。
+- [`build_report.mjs`](./pdd-monthly-profit-calculator/scripts/build_report.mjs)：客户核对版 Excel 生成。
+
+### SEO 需求调研
 
 - [`SKILL.md`](./seo-demand-research/SKILL.md)：主技能说明。
 - [`research-sop.md`](./seo-demand-research/references/research-sop.md)：完整调研流程。
