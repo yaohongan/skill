@@ -2,7 +2,7 @@
 
 ## 目标
 
-让 `pdd-monthly-profit-calculator` 使用同一套技能文件和计算代码，在以下环境中工作：
+让 `pdd-monthly-profit` 使用同一套技能文件和计算代码，在以下环境中工作：
 
 - Windows 与 macOS
 - OpenAI Codex
@@ -16,7 +16,7 @@
 技能继续采用 Agent Skills 通用结构：
 
 ```text
-pdd-monthly-profit-calculator/
+pdd-monthly-profit/
 ├── SKILL.md
 ├── scripts/
 ├── references/
@@ -67,8 +67,8 @@ pdd-monthly-profit-calculator/
 
 ## Agent 安装与调用
 
-- Codex 用户级目录：`~/.codex/skills/pdd-monthly-profit-calculator/`
-- Claude Code 用户级目录：`~/.claude/skills/pdd-monthly-profit-calculator/`
+- Codex 用户级目录：`~/.codex/skills/pdd-monthly-profit/`
+- Claude Code 用户级目录：`~/.claude/skills/pdd-monthly-profit/`
 - WorkBuddy / CodeBuddy：优先使用产品设置页“导入 Skill”；项目级可放入产品识别的 skills 目录。
 
 技能正文不写死 Agent 专属工具名。Agent 需要读取截图、访问文件和运行 Python；权限不足时先向用户申请。

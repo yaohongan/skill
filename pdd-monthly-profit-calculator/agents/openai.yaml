@@ -1,4 +1,0 @@
-interface:
-  display_name: "拼多多月度利润核算"
-  short_description: "根据投流截图、商品成本表和订单文件核算月度利润并生成客户核对表"
-  default_prompt: "请使用 $pdd-monthly-profit-calculator 根据投流截图、成本表和月度订单文件核算利润并生成客户核对版 Excel。"
