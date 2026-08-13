@@ -1,13 +1,13 @@
-# Codex Skills
+# Agent Skills
 
-这个仓库用于保存可复用的 Codex skills。当前包含两个技能：
+这个仓库用于保存可复用的 Agent Skills。`pdd-monthly-profit` 遵循通用 `SKILL.md` 结构，可供 Codex、Claude Code 和 WorkBuddy 使用。
 
 - [`seo-demand-research`](./seo-demand-research)：海外 SEO 需求调研、关键词找词、SERP 竞争判断、竞品分析和建站前 SOP。
 - [`pdd-monthly-profit`](./pdd-monthly-profit)：根据拼多多投流截图、成本表和订单文件核算月度盈亏，并生成中文客户版 Excel。
 
 ## 什么是 Skill
 
-Skill 是给 Codex 使用的专用工作流说明。它可以把一套重复流程固化下来，让后续新对话不用重新解释背景。
+Skill 是供 AI Agent 按需加载的专用工作流说明。它可以把一套重复流程固化下来，让后续新对话不用重新解释背景。
 
 一个标准 skill 通常包含：
 
@@ -23,7 +23,7 @@ skill-name/
 其中：
 
 - `SKILL.md`：触发条件和主流程。
-- `agents/openai.yaml`：Codex UI 里的显示名称、短描述和默认提示词。
+- `agents/openai.yaml`：Codex UI 的可选显示信息；Claude Code 和 WorkBuddy 可忽略。
 - `references/`：按需加载的详细 SOP、评分表、案例库和输出模板。
 
 ## Skill：pdd-monthly-profit
@@ -71,35 +71,86 @@ skill-name/
 - 输出建站前 SOP
 - 为海外 AI 工具站、SaaS 站、内容站找冷启动切口
 
-## 安装方式
+## pdd-monthly-profit 兼容性
 
-把本仓库中的技能目录复制到 Codex skills 目录：
+| 系统 | Codex | Claude Code | WorkBuddy |
+|---|---|---|---|
+| Windows | 支持 | 支持 | 支持导入 |
+| macOS | 支持 | 支持 | 支持导入 |
+
+共同要求：Python 3.10+，并允许 Agent 读取投流截图和本地订单、成本文件。核算与 Excel 生成只使用 Python，不依赖 Node.js、PowerShell、Windows Junction 或 Codex 专属表格组件。
+
+## 安装依赖
+
+进入技能目录后安装：
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+Windows 如果没有 `python3` 命令，可使用：
+
+```powershell
+py -3 -m pip install -r requirements.txt
+```
+
+安装后可检查环境：
+
+```bash
+python3 scripts/check_environment.py
+```
+
+## 安装到不同客户端
+
+### Codex
+
+macOS/Linux：
 
 ```bash
 mkdir -p ~/.codex/skills
-cp -R seo-demand-research ~/.codex/skills/
 cp -R pdd-monthly-profit ~/.codex/skills/
 ```
 
-安装后路径应类似：
+Windows PowerShell：
 
-```text
-~/.codex/skills/seo-demand-research/SKILL.md
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.codex\skills" | Out-Null
+Copy-Item -Recurse -Force ".\pdd-monthly-profit" "$HOME\.codex\skills\pdd-monthly-profit"
 ```
 
-如果你已经在当前机器上创建过这个 skill，可以用下面命令覆盖更新：
+### Claude Code
+
+Claude Code 官方个人技能目录为 `~/.claude/skills/`。macOS/Linux：
 
 ```bash
-rm -rf ~/.codex/skills/seo-demand-research
-cp -R seo-demand-research ~/.codex/skills/
-
-rm -rf ~/.codex/skills/pdd-monthly-profit
-cp -R pdd-monthly-profit ~/.codex/skills/
+mkdir -p ~/.claude/skills
+cp -R pdd-monthly-profit ~/.claude/skills/
 ```
+
+Windows PowerShell：
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
+Copy-Item -Recurse -Force ".\pdd-monthly-profit" "$HOME\.claude\skills\pdd-monthly-profit"
+```
+
+安装后使用 `/pdd-monthly-profit` 调用，也可用自然语言触发。
+
+### WorkBuddy
+
+先在仓库根目录生成上传包：
+
+```bash
+python3 pdd-monthly-profit/scripts/package_workbuddy_skill.py --output pdd-monthly-profit-workbuddy.zip
+```
+
+Windows 也可以把 `python3` 换成 `py -3`。然后在 WorkBuddy 中打开“技能 → 添加技能 → 上传技能”，选择 `pdd-monthly-profit-workbuddy.zip`。ZIP 根目录直接包含 `SKILL.md`、`requirements.txt`、`scripts/` 和 `references/`，不包含测试缓存或客户数据。
+
+WorkBuddy 必须获得读取截图、订单表、成本表和运行 Python 的权限。导入后新开对话，用下面的调用示例测试。
 
 ## 如何调用
 
-在 Codex 新对话里可以直接说：
+在 Codex 或 WorkBuddy 新对话里可以直接说：
 
 ```text
 使用 pdd-monthly-profit，帮我根据投流截图、成本表和订单文件核算7月份利润，并生成客户核对版 Excel。
@@ -221,7 +272,10 @@ cp -R pdd-monthly-profit ~/.codex/skills/
 - [`field-mapping.md`](./pdd-monthly-profit/references/field-mapping.md)：订单、成本、状态字段别名与 SKU 匹配边界。
 - [`prepare_profit_data.py`](./pdd-monthly-profit/scripts/prepare_profit_data.py)：命令行入口，读取订单和成本表并输出核算数据。
 - [`profit_core.py`](./pdd-monthly-profit/scripts/profit_core.py)：订单筛选、SKU 匹配和利润核算核心逻辑。
-- [`build_profit_report.mjs`](./pdd-monthly-profit/scripts/build_profit_report.mjs)：生成中文客户版 Excel 和预览图。
+- [`build_profit_report.py`](./pdd-monthly-profit/scripts/build_profit_report.py)：跨平台生成中文客户版 Excel。
+- [`check_environment.py`](./pdd-monthly-profit/scripts/check_environment.py)：检查 Python 版本和依赖。
+- [`package_workbuddy_skill.py`](./pdd-monthly-profit/scripts/package_workbuddy_skill.py)：生成 WorkBuddy 可上传技能包。
+- [`requirements.txt`](./pdd-monthly-profit/requirements.txt)：Windows 与 macOS 共用依赖清单。
 
 ### SEO 需求调研
 

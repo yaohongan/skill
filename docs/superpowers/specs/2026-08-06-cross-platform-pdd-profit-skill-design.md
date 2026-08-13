@@ -38,7 +38,7 @@ pdd-monthly-profit/
 
 ### 数据核算
 
-保留 `scripts/analyze_profit.py`，继续负责：
+保留 `scripts/profit_core.py` 和命令行入口 `scripts/prepare_profit_data.py`，继续负责：
 
 - 读取 CSV、XLS 和 XLSX
 - 日期过滤
@@ -50,16 +50,18 @@ pdd-monthly-profit/
 
 ### Excel 报告
 
-使用 `scripts/build_report.py` 替代 Node.js 报告脚本。它读取分析 JSON，生成与现有版本等价的六张中文工作表：
+使用 `scripts/build_profit_report.py` 替代 Node.js 报告脚本。它读取分析 JSON，生成与现有版本等价的八张中文工作表：
 
-- 核算说明
-- 商品盈亏汇总
-- 有效订单明细
-- 成本映射
-- 未匹配商品
-- 排除订单
+- 客户汇报
+- SKU汇总
+- 订单明细
+- 成本标准
+- 剔除订单
+- 未匹配SKU
+- 参数与来源
+- 核对检查
 
-投流金额保持黄色可编辑单元格，净利润和逐单毛利保留 Excel 公式，商品 ID 完整显示。
+净利润和逐单毛利保留 Excel 公式，商品 ID 完整显示，推广费在客户汇报页单独扣除。
 
 ### 环境检查
 
@@ -69,7 +71,7 @@ pdd-monthly-profit/
 
 - Codex 用户级目录：`~/.codex/skills/pdd-monthly-profit/`
 - Claude Code 用户级目录：`~/.claude/skills/pdd-monthly-profit/`
-- WorkBuddy / CodeBuddy：优先使用产品设置页“导入 Skill”；项目级可放入产品识别的 skills 目录。
+- WorkBuddy：优先使用产品技能管理页导入整个 Skill 文件夹；不同版本入口可能变化，不假设未公开的固定本地目录。
 
 技能正文不写死 Agent 专属工具名。Agent 需要读取截图、访问文件和运行 Python；权限不足时先向用户申请。
 
