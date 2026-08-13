@@ -25,6 +25,8 @@ def check_environment():
 
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     result = check_environment()
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result["状态"] == "通过" else 1
